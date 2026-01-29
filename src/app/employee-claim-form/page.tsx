@@ -39,7 +39,7 @@ export default function EmployeeClaimForm() {
             <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-semibold">Claim Status & History</h2>
-                    <button className="bg-gray-400">
+                    <button className="bg-blue-500 text-white py-2 px-2 hover:bg-blue-800">
                         Create New Claim
                     </button>
                 </div>
@@ -72,10 +72,10 @@ export default function EmployeeClaimForm() {
                                     <td className="p-3">{claim.description}</td>
                                     <td className="p-3">
                                         <div className="flex gap-2">
-                                            <button className="bg-gray-400">
+                                            <button className="bg-gray-400 py-2 px-2">
                                                 View JPEG
                                             </button>
-                                            <button className="bg-gray-400">
+                                            <button className="bg-gray-400 py-2 px-2">
                                                 View PDF
                                             </button>
                                         </div>
