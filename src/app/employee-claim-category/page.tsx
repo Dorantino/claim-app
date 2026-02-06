@@ -25,11 +25,11 @@ export default function ClaimCatagory() {
                 <div className="bg-white rounded-lg shadow p-6">
                     <h2 className="text-xl font-semibold mb-6">Claim Information</h2>
 
-                    {/* Select Catagory */}
+                    {/* Select Category */}
                     <div className="mb-4">
-                        <label className="block font-semibold mb-2">Catagory</label>
+                        <label className="block font-semibold mb-2">Category</label>
                         <select className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">Select a catagory</option>
+                            <option value="">Select a category</option>
                             <option value="option1">Food</option>
                             <option value="option2">Travel</option>
                             <option value="option3">Lodging</option>
@@ -37,7 +37,7 @@ export default function ClaimCatagory() {
                         </select>
                     </div>
 
-                    {/* Special Catagory checkbox */}
+                    {/* Special Category checkbox */}
                     <div className="mb-4">
                         <label className="flex items-center gap-2 cursor-pointer">
                             <input type="checkbox" className="w-4 h-4" />
