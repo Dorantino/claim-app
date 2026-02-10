@@ -1,7 +1,7 @@
 db.users.drop();
 
 // USERS
-db.users.insert([
+db.users.insertMany([
     {
         firstName: "Admin",
         lastName: "User",
@@ -22,7 +22,7 @@ db.users.insert([
 
 
 db.claims.drop();
-db.claims.insert([
+db.claims.insertMany([
     {
         claimId: "CLM-001",
         category: "Travel",
@@ -42,6 +42,29 @@ db.claims.insert([
         medicalClaim: false,
         status: "Pending",
         createdAt: new Date()
+    }
+]);
+
+db.claimCategories.insertMany([
+    {
+        key: "FOOD",
+        label: "Food",
+        isDefault: true
+    },
+    {
+        key: "TRAVEL",
+        label: "Travel",
+        isDefault: true
+    },
+    {
+        key: "MEDICAL",
+        label: "Medical",
+        isDefault: true
+    },
+    {
+        key: "LODGING",
+        label: "Lodging",
+        isDefault: true
     }
 ]);
 
