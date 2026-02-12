@@ -82,7 +82,7 @@ export default function Login() {
                             Login
                         </button>
 
-                        <Link href="/admin/login/" className="text-sm text-center text-blue-500 hover:underline">
+                        <Link href="/admin/login" className="text-sm text-center text-blue-500 hover:underline">
                             Admin Login
                         </Link>
                     </div>
