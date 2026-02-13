@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server';
 const MONGO_URL: string = process.env.MONGO_URL || "mongodb://mongo:27017";
 const MONGO_DB_NAME: string = "dbData";
 
+
+// ------login and registration handlers------
 export async function loginUser(request: NextRequest) {
     const mongoClient = new MongoClient(MONGO_URL);
 
@@ -63,11 +65,6 @@ export async function addUser(request: NextRequest) {
         const email = sanitizeHtml(body.email);
         const password = sanitizeHtml(body.password);
 
-        // const firstName = body.firstName;
-        // const lastName = body.lastName;
-        // const email = body.email;
-        // const password = body.password;
-
         // hash password
         const passwordHash = await bcrypt.hash(password, 10);
 
@@ -95,4 +92,49 @@ export async function addUser(request: NextRequest) {
         await mongoClient.close();
     }
 }
+
+// ------read handlers------
+export async function getUsers() {
+    let mongoClient: MongoClient = new MongoClient(MONGO_URL);
+    let allUsers: any[];
+    try {
+        await mongoClient.connect();
+
+        const db = mongoClient.db(MONGO_DB_NAME);
+        const users = db.collection("users");
+
+        allUsers = await users.find().toArray();
+
+    } catch (error: any) {
+        console.log(`Error : ${error.message}`);
+        throw error;
+    } finally {
+        mongoClient.close();
+    }
+
+    return allUsers;
+}
+
+export async function getClaims() {
+    let mongoClient: MongoClient = new MongoClient(MONGO_URL);
+    let allClaims: any[];
+    try {
+        await mongoClient.connect();
+
+        const db = mongoClient.db(MONGO_DB_NAME);
+        const users = db.collection("claims");
+
+        allClaims = await users.find().toArray();
+
+    } catch (error: any) {
+        console.log(`Error : ${error.message}`);
+        throw error;
+    } finally {
+        mongoClient.close();
+    }
+
+    return allClaims;
+}
+
+
 

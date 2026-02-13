@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 const navItems = [
     { label: "Claims", href: "/admin/claims" },
     { label: "Reports", href: "/admin/reports" },
-    { label: "Users", href: "/admin/users" },
-    { label: "Category", href: "/admin/categories" }
+    { label: "User management", href: "/admin/users" },
+    { label: "Category management", href: "/admin/categories" }
 ];
 
 export default function AdminSidebar() {
@@ -16,7 +16,7 @@ export default function AdminSidebar() {
     return (
         <aside className="w-64 min-h-screen bg-slate-900 text-white">
             <div className="p-6 text-xl font-bold border-b border-slate-700">
-                Admin
+                Admin Dashboard
             </div>
 
             <nav className="p-4 space-y-2">
