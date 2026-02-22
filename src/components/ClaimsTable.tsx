@@ -53,7 +53,6 @@ export default function ClaimsTable({ claims }: { claims: any[] }) {
                 </select>
             </div>
 
-            {/* Table */}
             <div className="bg-white rounded-lg shadow overflow-hidden mt-6">
                 <table className="w-full text-sm text-left">
                     <thead className="bg-slate-100 text-slate-600 uppercase text-xs">
@@ -97,7 +96,7 @@ export default function ClaimsTable({ claims }: { claims: any[] }) {
                                 </td>
 
 
-                                <td className="px-6 py-4">
+                                <td className="px-3 py-4">
                                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(claim.status)}`}>{claim.status}</span>
                                 </td>
 

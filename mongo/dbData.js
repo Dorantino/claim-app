@@ -4,6 +4,7 @@ db.claimCategories.drop();
 
 const adminId = ObjectId();
 const ripleyId = ObjectId();
+const ChrisId = ObjectId();
 
 
 db.users.insertMany([
@@ -32,13 +33,28 @@ db.users.insertMany([
     passwordHash: "$2b$10$P6TYf8XjzTtuDECKpA/46euImibazFDxsI3e3t4uH2GVwrs4a5ArS",
     role: "EMPLOYEE",
     createdAt: new Date()
+  },
+  {
+    _id: ChrisId,
+    firstName: "Chris",
+    lastName: "Baron",
+    email: "chris123@test.com",
+    DOB: new Date("2001-03-21"),
+    address: {
+      street: "47 Oxford street",
+      city: "Halifax",
+      province: "NS",
+      postalCode: "B2N 1Y9",
+      country: "Canada"
+    },
+    passwordHash: "$2b$10$P6TYf8XjzTtuDECKpA/46euImibazFDxsI3e3t4uH2GVwrs4a5ArS",
+    role: "EMPLOYEE",
+    createdAt: new Date()
   }
 ]);
 
 
 db.claims.insertMany([
-
-
   {
     claimId: "CLM-001",
     employeeId: ripleyId,
@@ -84,7 +100,7 @@ db.claims.insertMany([
 
   {
     claimId: "CLM-003",
-    employeeId: ripleyId,
+    employeeId: ChrisId,
     date: new Date("2026-02-10"),
     category: "FOOD",
     description: "Conference dinner",
