@@ -1,7 +1,22 @@
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 
 export default function ClaimCatagory() {
 
+
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [facehuggerExposure, setFacehuggerExposure] = useState(false);
+    const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newCategory = e.target.value;
+        setSelectedCategory(newCategory);
+
+        // Reset facehugger exposure if not medical
+        if (newCategory !== 'Medical') {
+            setFacehuggerExposure(false);
+        }
+    };
 
     return (
         <div className="container mx-auto p-6 max-w-6xl">
@@ -28,22 +43,29 @@ export default function ClaimCatagory() {
                     {/* Select Category */}
                     <div className="mb-4">
                         <label className="block font-semibold mb-2">Category</label>
-                        <select className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select value={selectedCategory} onChange={handleCategoryChange} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Select a category</option>
-                            <option value="option1">Food</option>
-                            <option value="option2">Travel</option>
-                            <option value="option3">Lodging</option>
-                            <option value="option3">Medical</option>
+                            <option value="Food">Food</option>
+                            <option value="Travel">Travel</option>
+                            <option value="Lodging">Lodging</option>
+                            <option value="Medical">Medical</option>
                         </select>
                     </div>
 
                     {/* Special Category checkbox */}
-                    <div className="mb-4">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" className="w-4 h-4" />
-                            <span>Facehugger Exposure (If Medical is selected)</span>
-                        </label>
-                    </div>
+                    {selectedCategory === 'Medical' && (
+                        <div className="mb-4">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="w-4 h-4"
+                                    checked={facehuggerExposure}
+                                    onChange={(e) => setFacehuggerExposure(e.target.checked)}
+                                />
+                                <span>Facehugger Exposure</span>
+                            </label>
+                        </div>
+                    )}
 
                     {/* Claim Description */}
                     <div className="mb-4">
