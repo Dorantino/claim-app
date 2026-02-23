@@ -1,9 +1,9 @@
-import { getClaims } from "@/tools/DataManager";
+import { getAdminClaims } from "@/tools/DataManager";
 import ClaimsTable from "@/components/ClaimsTable";
 import { jsondump } from '@/tools/Toolkit';
 
 export default async function Dashboard() {
-    const claims = await getClaims();
+    const claims = await getAdminClaims();
 
     jsondump(claims);
 

@@ -1,5 +1,7 @@
-import { getClaims } from "@/tools/DataManager";
+import { getEmployeeClaims } from "@/tools/DataManager"
+import { NextResponse } from "next/server"
 
-export function GET() {
-    return getClaims();
+export async function GET() {
+    const claims = await getEmployeeClaims()
+    return NextResponse.json({ success: true, claims })
 }

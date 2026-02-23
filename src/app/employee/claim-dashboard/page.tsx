@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
+
 interface Claim {
     id: string | number;
     date: string;

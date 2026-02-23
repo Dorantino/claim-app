@@ -116,7 +116,7 @@ export async function getUsers() {
     return allUsers;
 }
 
-export async function getClaims() {
+export async function getAdminClaims() {
     let mongoClient: MongoClient = new MongoClient(MONGO_URL);
     let claims: any[];
     try {
@@ -147,7 +147,7 @@ export async function getClaims() {
             amount: claim.amount,
             status: claim.status,
             date: claim.date?.toISOString(),
-            creadtedAt: claim.createdAt?.toISOString(),
+            createdAt: claim.createdAt?.toISOString(),
             firstName: claim.employee.firstName,
             lastName: claim.employee.lastName
         }));
@@ -159,6 +159,37 @@ export async function getClaims() {
     } finally {
         mongoClient.close();
     }
+}
+
+// Show cliams table for enployees -- Robert Jones
+export async function getEmployeeClaims() {
+    const mongoClient = new MongoClient(MONGO_URL);
+
+    try {
+        await mongoClient.connect();
+        const db = mongoClient.db(MONGO_DB_NAME);
+        const claims = db.collection("claims");
+
+        const claimsData = await claims.find({}).toArray();
+
+        // Map Database fields to component expectations
+        const formattedClaims = claimsData.map(claim => ({
+            id: claim.claimId,
+            date: claim.createdAt.toISOString().split('T')[0],
+            category: claim.category,
+            amount: claim.amount,
+            status: claim.status.toLowerCase(),
+            description: claim.description
+        }));
+
+        return formattedClaims;
+
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    } finally {
+        await mongoClient.close();
+    }
+
 }
 
 
