@@ -53,10 +53,10 @@ export default function ClaimCatagory() {
                         <label className="block font-semibold mb-2">Category</label>
                         <select value={selectedCategory} onChange={handleCategoryChange} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Select a category</option>
-                            <option value="Food">Food</option>
-                            <option value="Lodging">Lodging</option>
-                            <option value="Travel">Travel</option>
-                            <option value="Medical">Medical</option>
+                            <option value="option1">Food</option>
+                            <option value="option2">Lodging</option>
+                            <option value="option3">Travel</option>
+                            <option value="option4">Medical</option>
                         </select>
                     </div>
 
@@ -79,7 +79,7 @@ export default function ClaimCatagory() {
                     {selectedCategory === 'Travel' && (
                         <div className="mb-4 space-y-4">
                             <div>
-                                <label className="block font-semibold mb-2">Where are you traveling from?</label>
+                                <label className="block font-semibold mb-2">Where are you traveling to?</label>
                                 <input
                                     type="text"
                                     value={destination}
@@ -89,7 +89,7 @@ export default function ClaimCatagory() {
                                 />
                             </div>
                             <div>
-                                <label className="block font-semibold mb-2">Where are you traveling to?</label>
+                                <label className="block font-semibold mb-2">Where are you traveling from?</label>
                                 <input
                                     type="text"
                                     value={returnTrip}
