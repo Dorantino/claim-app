@@ -1,26 +1,43 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+interface Category {
+    key: string;
+    label: string;
+}
+
 export default function ClaimCatagory() {
-
-
     const [selectedCategory, setSelectedCategory] = useState('');
     const [facehuggerExposure, setFacehuggerExposure] = useState(false);
     const [destination, setDestination] = useState('');
     const [returnTrip, setReturnTrip] = useState('');
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('/api/categories');
+                const data = await response.json();
+                setCategories(data);
+            } catch (error) {
+                console.error('Failed to fetch categories:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
     const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newCategory = e.target.value;
         setSelectedCategory(newCategory);
 
-        // Reset facehugger exposure if not medical
-        if (newCategory !== 'Medical') {
+        if (newCategory !== 'MEDICAL') {
             setFacehuggerExposure(false);
         }
 
-        // Reset travel fields if not travel
-        if (newCategory !== 'Travel') {
+        if (newCategory !== 'TRAVEL') {
             setDestination('');
             setReturnTrip('');
         }
@@ -53,15 +70,16 @@ export default function ClaimCatagory() {
                         <label className="block font-semibold mb-2">Category</label>
                         <select value={selectedCategory} onChange={handleCategoryChange} className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Select a category</option>
-                            <option value="option1">Food</option>
-                            <option value="option2">Lodging</option>
-                            <option value="option3">Travel</option>
-                            <option value="option4">Medical</option>
+                            {categories.map((category) => (
+                                <option key={category.key} value={category.key}>
+                                    {category.label}
+                                </option>
+                            ))}
                         </select>
                     </div>
 
                     {/* Medical Category checkbox */}
-                    {selectedCategory === 'Medical' && (
+                    {selectedCategory === 'MEDICAL' && (
                         <div className="mb-4">
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input
@@ -76,7 +94,7 @@ export default function ClaimCatagory() {
                     )}
 
                     {/* Travel Category fields */}
-                    {selectedCategory === 'Travel' && (
+                    {selectedCategory === 'TRAVEL' && (
                         <div className="mb-4 space-y-4">
                             <div>
                                 <label className="block font-semibold mb-2">Where are you traveling to?</label>
