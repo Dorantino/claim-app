@@ -1,11 +1,13 @@
+import { getUsers } from '@/tools/DataManager';
 
+export default async function UsersPage() {
+    const Users = await getUsers();
 
-export default function UsersPage() {
     return (
         <div className="space-y-6">
             <h1 className="text-3xl font-bold border-b border-slate-700 pb-4">User Management</h1>
 
-            {/* Top Bar */}
+
             <div className="flex justify-between items-center">
                 <input
                     type="text"
@@ -17,7 +19,6 @@ export default function UsersPage() {
                 </button>
             </div>
 
-            {/* Table */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
                 <table className="w-full">
                     <thead className="bg-gray-100 text-left">
@@ -31,17 +32,30 @@ export default function UsersPage() {
                     </thead>
 
                     <tbody>
-                        <tr className="border-t">
-                            <td className="p-4">Chris Baron</td>
-                            <td className="p-4">chris@test.com</td>
-                            <td className="p-4">EMPLOYEE</td>
-                            <td className="p-4">2026-02-21</td>
-                            <td className="p-4 space-x-3">
-                                <button className="bg-blue-600 text-white px-3 py-1 rounded">Edit</button>
-                                <button className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
-                            </td>
-                        </tr>
+                        {Users.map((user) => (
+                            <tr className="border-t" key={user.email}>
+                                <td className="p-4">{user.firstName} {user.lastName}</td>
+                                <td className="p-4">{user.email}</td>
+                                <td className="p-4">
+                                    <span className={`px-2 py-1 rounded text-xs ${user.role === "ADMIN"
+                                        ? "bg-purple-100 text-purple-700"
+                                        : "bg-gray-100 text-gray-700"
+                                        }`}>
+                                        {user.role}
+                                    </span>
+                                </td>
+                                <td className="p-4">{user.date}</td>
+                                <td className="p-4 space-x-3">
+                                    {user.role !== "ADMIN" && (
+                                        <button className="bg-red-600 text-white px-3 py-1 rounded">
+                                            Delete
+                                        </button>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
+
                 </table>
             </div>
         </div>

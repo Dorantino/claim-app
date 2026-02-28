@@ -104,16 +104,24 @@ export async function getUsers() {
         const db = mongoClient.db(MONGO_DB_NAME);
         const users = db.collection("users");
 
-        allUsers = await users.find().toArray();
+        allUsers = await users.find().sort({ role: 1 }).toArray();
+
+        return allUsers.map(user => ({
+            id: user._id.toString(),
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role,
+            date: user.createdAt.toISOString().split("T")[0]
+        }));
 
     } catch (error: any) {
         console.log(`Error : ${error.message}`);
         throw error;
     } finally {
-        mongoClient.close();
+        await mongoClient.close();
     }
 
-    return allUsers;
 }
 
 export async function getAdminClaims() {
