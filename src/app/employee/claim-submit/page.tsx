@@ -1,7 +1,14 @@
+'use client';
+
+import { useState } from 'react';
 import Link from "next/link";
 
 export default function EmployeeClaimSubmit() {
-
+    const [wyId, setWyId] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const isFormValid = () => {
+        return wyId.trim() !== '' && phoneNumber.trim() !== '';
+    };
 
     return (
         <div className="container mx-auto p-6 max-w-6xl">
@@ -30,13 +37,13 @@ export default function EmployeeClaimSubmit() {
                             {/* WY ID Number */}
                             <div className="flex-1">
                                 <label className="block font-semibold mb-2">Weyland-Yutani ID</label>
-                                <input type="text" placeholder="Enter your WY ID Number" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                <input type="text" value={wyId} onChange={(e) => setWyId(e.target.value)} placeholder="Enter your WY ID Number" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                             </div>
 
                             {/* Phone Number */}
                             <div className="flex-1">
                                 <label className="block font-semibold mb-2">Phone Number</label>
-                                <input type="tel" placeholder="Enter your phone number" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="Enter your phone number" className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                             </div>
                         </div>
                     </form>
@@ -46,7 +53,13 @@ export default function EmployeeClaimSubmit() {
                                 Back
                             </Link>
                         </button>
-                        <button className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                        <button
+                            disabled={!isFormValid()}
+                            className={`px-6 py-3 rounded-lg transition-colors font-semibold ${isFormValid()
+                                    ? 'bg-blue-500 text-white hover:bg-blue-700 cursor-pointer'
+                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
+                        >
                             <Link href="/employee/claim-category">
                                 Next
                             </Link>
