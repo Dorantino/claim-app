@@ -14,6 +14,9 @@ export default function ClaimCatagory() {
     const [destination, setDestination] = useState('');
     const [returnTrip, setReturnTrip] = useState('');
     const [categories, setCategories] = useState<Category[]>([]);
+    const [receiptImage, setReceiptImage] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [claimDescription, setClaimDescription] = useState('');
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -40,6 +43,39 @@ export default function ClaimCatagory() {
         if (newCategory !== 'TRAVEL') {
             setDestination('');
             setReturnTrip('');
+        }
+    };
+
+    // Upload image of receipt
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+
+        if (file) {
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!validTypes.includes(file.type)) {
+                alert('Please upload only JPEG or PNG images');
+                e.target.value = ''; // Reset input
+                return;
+            }
+
+            // Validate file size (5MB limit)
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if (file.size > maxSize) {
+                alert('File size must be less than 5MB');
+                e.target.value = ''; // Reset input
+                return;
+            }
+
+            // Set the file
+            setReceiptImage(file);
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
         }
     };
 
@@ -100,8 +136,8 @@ export default function ClaimCatagory() {
                                 <label className="block font-semibold mb-2">Where are you traveling to?</label>
                                 <input
                                     type="text"
-                                    value={destination}
-                                    onChange={(e) => setDestination(e.target.value)}
+                                    value={claimDescription}
+                                    onChange={(e) => setClaimDescription(e.target.value)}
                                     placeholder="Enter Address"
                                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
@@ -136,6 +172,42 @@ export default function ClaimCatagory() {
                                 Submit
                             </Link>
                         </button>
+                    </div>
+
+                    {/* Receipt Upload */}
+                    <div className="mb-4">
+                        <label className="block font-semibold mb-2">Upload Receipt (Optional)</label>
+                        <input
+                            type="file"
+                            accept=".jpg,.jpeg,.png"
+                            onChange={handleImageUpload}
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <p className="text-sm text-gray-500 mt-1">
+                            Accepted formats: JPG, PNG. Max size: 5MB
+                        </p>
+
+                        {/* Image Preview */}
+                        {imagePreview && (
+                            <div className="mt-4">
+                                <p className="text-sm font-semibold mb-2">Preview:</p>
+                                <img
+                                    src={imagePreview}
+                                    alt="Receipt preview"
+                                    className="max-w-xs max-h-48 border border-gray-300 rounded-lg"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setReceiptImage(null);
+                                        setImagePreview(null);
+                                    }}
+                                    className="mt-2 text-sm text-red-600 hover:text-red-800"
+                                >
+                                    Remove image
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
