@@ -1,4 +1,5 @@
 import { getUsers } from '@/tools/DataManager';
+import Link from "next/link";
 
 export default async function UsersPage() {
     const Users = await getUsers();
@@ -27,7 +28,7 @@ export default async function UsersPage() {
                             <th className="p-4">Email</th>
                             <th className="p-4">Role</th>
                             <th className="p-4">Created</th>
-                            <th className="p-4">Actions</th>
+                            <th className="p-4">Action</th>
                         </tr>
                     </thead>
 
@@ -47,9 +48,11 @@ export default async function UsersPage() {
                                 <td className="p-4">{user.date}</td>
                                 <td className="p-4 space-x-3">
                                     {user.role !== "ADMIN" && (
-                                        <button className="bg-red-600 text-white px-3 py-1 rounded">
-                                            Delete
-                                        </button>
+                                        <Link href={`/admin/dashboard/users/delete/${user.id}`}>
+                                            <button className="bg-red-600 text-white px-3 py-1 rounded">
+                                                Delete
+                                            </button>
+                                        </Link>
                                     )}
                                 </td>
                             </tr>

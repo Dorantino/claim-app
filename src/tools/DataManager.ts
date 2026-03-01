@@ -1,5 +1,6 @@
+
 import bcrypt from "bcrypt";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import sanitizeHtml from 'sanitize-html';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -198,6 +199,33 @@ export async function getEmployeeClaims() {
         await mongoClient.close();
     }
 
+}
+
+export async function deleteUser(request: NextRequest, id: string) {
+    let mongoClient: MongoClient = new MongoClient(MONGO_URL);
+    try {
+        await mongoClient.connect();
+
+        const userId: ObjectId = new ObjectId(sanitizeHtml(id));
+
+        const db = mongoClient.db(MONGO_DB_NAME);
+        const users = db.collection("users");
+
+        const result = await users.deleteOne({ "_id": userId })
+
+
+        // check if deleted correctly
+        if (result.deletedCount <= 0) {
+            return NextResponse.json({ error: "No user found with ID" }, { status: 404 });
+        } else {
+            // status code for deleted
+            return NextResponse.json(result, { status: 200 });
+        }
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    } finally {
+        mongoClient.close();
+    }
 }
 
 
