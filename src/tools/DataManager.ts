@@ -189,7 +189,7 @@ export async function getAdminClaims() {
 }
 
 // Show cliams table for enployees -- Robert Jones
-export async function getEmployeeClaims() {
+export async function getEmployeeClaims(userId?: string) {
     const mongoClient = new MongoClient(MONGO_URL);
 
     try {
@@ -197,7 +197,8 @@ export async function getEmployeeClaims() {
         const db = mongoClient.db(MONGO_DB_NAME);
         const claims = db.collection("claims");
 
-        const claimsData = await claims.find({}).toArray();
+        const filter = userId ? { employeeId: new ObjectId(userId) } : {};
+        const claimsData = await claims.find(filter).toArray();
 
         // Map Database fields to component expectations
         const formattedClaims = claimsData.map(claim => ({

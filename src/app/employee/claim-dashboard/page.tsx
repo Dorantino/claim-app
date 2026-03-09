@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 
 interface Claim {
@@ -16,13 +17,24 @@ export default function EmployeeClaimForm() {
     const [claims, setClaims] = useState<Claim[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [userName, setUserName] = useState<string>('');
+    const router = useRouter();
 
     // Fetch claims on component mount
     useEffect(() => {
         const fetchClaims = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('/api/employee/claims');
+
+                // Check if user is logged in
+                const userId = localStorage.getItem('userId');
+                if (!userId) {
+                    router.push('/employee/login');
+                    return;
+                }
+
+                // Fetch user-specific claims
+                const response = await fetch(`/api/employee/claims?userId=${userId}`);
                 const data = await response.json();
 
                 if (data.success) {
@@ -38,7 +50,7 @@ export default function EmployeeClaimForm() {
         };
 
         fetchClaims();
-    }, []);
+    }, [router]);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -87,7 +99,7 @@ export default function EmployeeClaimForm() {
                 </div>
             </header>
             <div className="mb-6">
-                <h1 className="text-3xl font-bold mb-2">Hello, Ellen Ripley!</h1>
+                <h1 className="text-3xl font-bold mb-2">Hello, User!</h1>
                 <p className="text-gray-600">View your claim status and history</p>
             </div>
 
