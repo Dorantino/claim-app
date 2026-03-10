@@ -1,9 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getEmployeeClaims } from "@/tools/DataManager";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
-        const claims = await getEmployeeClaims();
+
+        const { searchParams } = new URL(request.url);
+        const userId = searchParams.get('userId');
+
+        const claims = await getEmployeeClaims(userId || undefined);
 
         return NextResponse.json({
             success: true,

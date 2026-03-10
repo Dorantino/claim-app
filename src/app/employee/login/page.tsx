@@ -30,6 +30,13 @@ export default function Login() {
 
         const role = result.data.role;
 
+        const userId = result.data.userId;
+
+
+
+        localStorage.setItem('userId', userId);
+        localStorage.setItem('userRole', role);
+
         if (role === "EMPLOYEE") {
             router.push("/employee/claim-dashboard");
         } else if (!(role === "EMPLOYEE")) {
