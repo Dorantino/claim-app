@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { sendJSONData } from "@/tools/Toolkit";
+import Link from "next/link";
 import LoadingOverlay from "@/tools/./LoadingOverlay";
 
 export default function AddEmployee() {
@@ -239,12 +240,14 @@ export default function AddEmployee() {
                             </button>
 
 
-                            <button
-                                type="button"
-                                className="flex-1 bg-gray-300 text-gray-800 py-2 rounded hover:bg-gray-400"
-                            >
-                                Cancel
-                            </button>
+
+                            <Link href="/admin/dashboard/users">
+                                <button
+                                    className="flex-1 bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+                                >Cancel
+                                </button>
+                            </Link>
+
 
                         </div>
 

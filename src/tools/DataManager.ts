@@ -557,7 +557,8 @@ export async function getUserProfile(userId: string) {
 
 /* ------------------------------------------------------REPORTS*/
 
-export async function getClaimCounts() {
+export async function getClaimCounts(start?: string, end?: string) {
+
     const mongoClient = new MongoClient(MONGO_URL);
 
     try {
@@ -566,30 +567,72 @@ export async function getClaimCounts() {
         const db = mongoClient.db(MONGO_DB_NAME);
         const claims = db.collection("claims");
 
-        const total: any = await claims.countDocuments();
+        const filter: any = {};
 
-        const approved: any = await claims.countDocuments({
+        if (start && end) {
+            filter.date = {
+                $gte: new Date(start),
+                $lte: new Date(end)
+            };
+        }
+
+        const total = await claims.countDocuments(filter);
+
+        const approved = await claims.countDocuments({
+            ...filter,
             status: "APPROVED"
         });
 
-        const rejected: any = await claims.countDocuments({
+        const rejected = await claims.countDocuments({
+            ...filter,
             status: "REJECTED"
         });
 
-        const pending: any = await claims.countDocuments({
+        const pending = await claims.countDocuments({
+            ...filter,
             status: "PENDING"
         });
 
-        return {
-            total,
-            approved,
-            rejected,
-            pending
-        };
+        return { total, approved, rejected, pending };
 
-    } catch (error: any) {
-        console.log(`Error : ${error.message}`);
-        throw error;
+    } finally {
+        await mongoClient.close();
+    }
+}
+
+export async function getClaimsByCategory(start?: string, end?: string) {
+
+    const mongoClient = new MongoClient(MONGO_URL);
+
+    try {
+        await mongoClient.connect();
+
+        const db = mongoClient.db(MONGO_DB_NAME);
+        const claims = db.collection("claims");
+
+        const match: any = {};
+
+        if (start && end) {
+            match.date = {
+                $gte: new Date(start),
+                $lte: new Date(end)
+            };
+        }
+
+        const results = await claims.aggregate([
+            { $match: match },
+            {
+                $group: {
+                    _id: "$category",
+                    count: { $sum: 1 }
+                }
+            }
+        ]).toArray();
+
+        return results.map(r => ({
+            category: r._id,
+            count: r.count
+        }));
 
     } finally {
         await mongoClient.close();

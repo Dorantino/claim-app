@@ -1,14 +1,18 @@
-import { getClaimCounts } from '@/tools/DataManager';
+import { getClaimCounts, getClaimsByCategory } from '@/tools/DataManager';
 import Reports from "@/components/reports";
 
 
 
-export default async function page() {
-    const claimCounts: any = await getClaimCounts();
+export default async function Page({ searchParams }: { searchParams: any }) {
+    const start = searchParams.start;
+    const end = searchParams.end;
+
+    const claimCounts = await getClaimCounts(start, end);
+    const byCategory = await getClaimsByCategory(start, end);
 
     return (
         <>
-            <Reports claimCounts={claimCounts} />
+            <Reports claimCounts={{ ...claimCounts, byCategory }} />
         </>
     );
 }
