@@ -81,6 +81,7 @@ export default function EmployeeClaimForm() {
         }
     };
 
+    // Handle logout by clearing user session and redirecting to login page
     const handleLogout = () => {
         localStorage.removeItem('userId');
         router.push('/employee/login');
