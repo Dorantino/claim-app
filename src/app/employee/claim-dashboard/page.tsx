@@ -9,6 +9,7 @@
  * - Logout functionality
  * - Authentication check and redirect
  * 
+ * @author Robert Jones
  * @page /employee/claim-dashboard
  * @requires User must be logged in with valid userId in localStorage
  */
@@ -21,6 +22,7 @@ import { useRouter } from "next/navigation";
 /**
  * Claim data structure representing an employee's expense claim
  * 
+ * @author Robert Jones
  * @interface Claim
  * @property {string | number} id - Unique identifier for the claim
  * @property {string} date - Date the claim was submitted
@@ -45,6 +47,7 @@ interface Claim {
  * Fetches user profile and claim data on mount, handles authentication,
  * and provides UI for claim management.
  * 
+ * @author Robert Jones
  * @component
  * @returns {JSX.Element} The employee claim dashboard page
  */
@@ -62,18 +65,19 @@ export default function EmployeeClaimForm() {
     const router = useRouter();
 
     /**
- * Data Fetching Effect
- * 
- * Runs on component mount to:
- * 1. Check user authentication (redirect to login if not authenticated)
- * 2. Fetch user profile data
- * 3. Fetch user's claims data
- * 
- * Uses Promise.all for parallel data fetching to improve performance.
- * 
- * @effect
- * @dependencies [router] - Re-runs if router instance changes
- */
+     * Data Fetching Effect
+     * 
+     * Runs on component mount to:
+     * 1. Check user authentication (redirect to login if not authenticated)
+     * 2. Fetch user profile data
+     * 3. Fetch user's claims data
+     * 
+     * Uses Promise.all for parallel data fetching to improve performance.
+     * 
+     * @author Robert Jones
+     * @effect
+     * @dependencies [router] - Re-runs if router instance changes
+     */
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -127,6 +131,7 @@ export default function EmployeeClaimForm() {
      * Returns Tailwind CSS classes for styling claim status badges
      * based on the claim's current status.
      * 
+     * @author Robert Jones
      * @function getStatusColor
      * @param {string} status - The claim status ("approved", "pending", "rejected")
      * @returns {string} Tailwind CSS classes for background and text color
@@ -150,6 +155,7 @@ export default function EmployeeClaimForm() {
      * Clears user session data from localStorage and redirects
      * to the employee login page.
      * 
+     * @author Robert Jones
      * @function handleLogout
      * @returns {void}
      */
@@ -214,11 +220,34 @@ export default function EmployeeClaimForm() {
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead>
-                            <tr className="border-b"><th className="text-left p-3 font-semibold">Claim ID</th><th className="text-left p-3 font-semibold">Category</th><th className="text-left p-3 font-semibold">Date</th><th className="text-left p-3 font-semibold">Amount</th><th className="text-left p-3 font-semibold">Status</th><th className="text-left p-3 font-semibold">Description</th><th className="text-left p-3 font-semibold">Actions</th></tr>
+                            <tr className="border-b">
+                                <th className="text-left p-3 font-semibold">Claim ID</th>
+                                <th className="text-left p-3 font-semibold">Category</th>
+                                <th className="text-left p-3 font-semibold">Date</th>
+                                <th className="text-left p-3 font-semibold">Amount</th>
+                                <th className="text-left p-3 font-semibold">Status</th>
+                                <th className="text-left p-3 font-semibold">Description</th>
+                                <th className="text-left p-3 font-semibold">Actions</th>
+                            </tr>
                         </thead>
                         <tbody>
                             {claims.map((claim) => (
-                                <tr key={claim.id} className="border-b hover:bg-gray-50"><td className="p-3">{claim.id}</td><td className="p-3">{claim.category}</td><td className="p-3">{claim.date}</td><td className="p-3">${claim.amount.toFixed(2)}</td><td className="p-3"><span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(claim.status)}`}>{claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}</span></td><td className="p-3">{claim.description}</td><td className="p-3"><div className="flex gap-2"><button className="bg-blue-700 text-white py-2 px-2 hover:bg-blue-900">View JPEG</button><button className="bg-red-700 text-white py-2 px-2 hover:bg-red-900">View PDF</button></div></td></tr>
+                                <tr key={claim.id} className="border-b hover:bg-gray-50">
+                                    <td className="p-3">{claim.id}</td>
+                                    <td className="p-3">{claim.category}</td>
+                                    <td className="p-3">{claim.date}</td>
+                                    <td className="p-3">${claim.amount.toFixed(2)}</td>
+                                    <td className="p-3">
+                                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(claim.status)}`}>{claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}</span>
+                                    </td>
+                                    <td className="p-3">{claim.description}</td>
+                                    <td className="p-3">
+                                        <div className="flex gap-2">
+                                            <button className="bg-blue-700 text-white py-2 px-2 hover:bg-blue-900">View JPEG</button>
+                                            <button className="bg-red-700 text-white py-2 px-2 hover:bg-red-900">View PDF</button>
+                                        </div>
+                                    </td>
+                                </tr>
                             ))}
                         </tbody>
                     </table>

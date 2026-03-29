@@ -11,6 +11,7 @@
  * - Updates user profile with any changes
  * - Authentication check and redirect
  * 
+ * @author Robert Jones
  * @page /employee/claim-submit
  * @requires User must be logged in with valid userId in localStorage
  * @navigation Next: /employee/claim-category
@@ -28,6 +29,7 @@ import { useRouter } from 'next/navigation';
  * Collects employee identification information (WY ID and phone number)
  * and validates before allowing progression to category selection.
  * 
+ * @author Robert Jones
  * @component
  * @returns {JSX.Element} The employee information form page
  */
@@ -49,6 +51,7 @@ export default function EmployeeClaimSubmit() {
  * Verifies user is logged in on component mount.
  * Redirects to login page if no userId found in localStorage.
  * 
+ * @author Robert Jones
  * @effect
  * @dependencies [router]
  */
@@ -65,6 +68,7 @@ export default function EmployeeClaimSubmit() {
  * Fetches user profile on mount to pre-populate WY ID and phone number fields.
  * Improves UX by reducing manual data entry.
  * 
+ * @author Robert Jones
  * @effect
  * @dependencies [] - Runs once on mount
  */
@@ -88,6 +92,7 @@ export default function EmployeeClaimSubmit() {
  * 
  * Validates that all required fields (WY ID and phone number) are filled out.
  * 
+ * @author Robert Jones
  * @function isFormValid
  * @returns {boolean} True if form is valid and can be submitted
  */
@@ -101,6 +106,7 @@ export default function EmployeeClaimSubmit() {
  * Saves employee information to database and navigates to claim category page.
  * Performs validation, updates user profile, and handles errors.
  * 
+ * @author Robert Jones
  * @async
  * @function handleNext
  * @returns {Promise<void>}
