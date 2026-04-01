@@ -68,6 +68,7 @@ export async function addUser(request: NextRequest) {
         const email = sanitizeHtml(body.email);
         const password = sanitizeHtml(body.password);
         const DOB = sanitizeHtml(body.dob);
+        const phoneNumber = sanitizeHtml(body.phoneNumber);
 
         const address = {
             street: sanitizeHtml(body.street),
@@ -85,6 +86,23 @@ export async function addUser(request: NextRequest) {
 
         const existingUser = await users.findOne({ email });
 
+        // Generate WY ID
+        const lastUser = await users
+            .find({ wyId: { $exists: true } })
+            .sort({ wyId: -1 })
+            .limit(1)
+            .toArray();
+
+        let newWyId = "WY-001";
+
+        if (lastUser.length > 0 && lastUser[0].wyId) {
+            const lastId = lastUser[0].wyId;
+            const number = parseInt(lastId.split("-")[1]);
+            const nextNumber = number + 1;
+
+            newWyId = `WY-${nextNumber.toString().padStart(3, "0")}`;
+        }
+
         if (existingUser) {
             return NextResponse.json(
                 { error: "User already exists" },
@@ -98,6 +116,8 @@ export async function addUser(request: NextRequest) {
             email,
             DOB: new Date(DOB),
             address,
+            phoneNumber,
+            wyId: newWyId,
             passwordHash,
             role: "EMPLOYEE",
             createdAt: new Date()

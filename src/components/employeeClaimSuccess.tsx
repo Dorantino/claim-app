@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-export default function ClaimSent() {
+export default function EmployeeClaimSuccess() {
     const params = useSearchParams();
     const isAdmin = params.get("admin") === "true";
 
