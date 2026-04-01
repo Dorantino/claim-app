@@ -18,6 +18,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 /**
  * Claim data structure representing an employee's expense claim
@@ -163,107 +164,117 @@ export default function EmployeeClaimForm() {
         localStorage.removeItem('userId');
         router.push('/employee/login');
     };
-
-    // Loading state
-    if (loading) {
-        return (
-            <div className="container mx-auto p-6 max-w-6xl">
-                <div className="text-center py-8">
-                    <p>Loading claims...</p>
-                </div>
-            </div>
-        );
-    }
-
-    // Error state  
+    // Error state
     if (error) {
         return (
-            <div className="container mx-auto p-6 max-w-6xl">
-                <div className="text-center py-8 text-red-500">
-                    <p>{error}</p>
+            <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+                <div className="bg-white rounded-lg shadow-sm border border-red-200 p-8">
+                    <div className="text-center">
+                        <div className="text-red-600 text-5xl mb-4"></div>
+                        <p className="text-red-600 font-semibold text-lg">{error}</p>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="container mx-auto p-6 max-w-6xl">
-            {/* Header */}
-            <header>
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                        <img src="/images/weyyuLogo.png" alt="Company Logo" width={150} height={150} />
-                        <div className="text-3xl font-bold">
-                            Welcome to Weyland-Yutani's Employee Claims Service
+        <div>
+            <LoadingOverlay show={loading} bgColor="rgba(17, 24, 39, 0.8)" spinnerColor="#3B82F6" />
+            <div className="min-h-screen bg-gray-100">
+                {/* Header */}
+                <header className="bg-white shadow-sm border-b border-gray-200">
+                    <div className="max-w-7xl mx-auto px-6 py-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <img src="/images/weyyuLogo.png" alt="Company Logo" width={120} height={120} />
+                                <div>
+                                    <h1 className="text-2xl font-bold text-gray-900">Weyland-Yutani Corp</h1>
+                                    <p className="text-sm text-gray-600">Employee Claims Service</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition font-medium"
+                            >
+                                Log Out
+                            </button>
                         </div>
                     </div>
-                    <button
-                        onClick={handleLogout}
-                        className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
-                    >
-                        Log Out
-                    </button>
-                </div>
-            </header>
+                </header>
 
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold mb-2">Hello, {firstName} {lastName}!</h1>
-                <p className="text-gray-600">View your claim status and history</p>
-            </div>
-
-            {/* Claim Status & History Section */}
-            <div className="bg-white rounded-lg shadow p-6">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold">Claim Status & History</h2>
-                    <button className="bg-blue-500 text-white py-2 px-2 hover:bg-blue-800">
-                        <Link href="/employee/claim-submit">
-                            Create New Claim
-                        </Link>
-                    </button>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="border-b">
-                                <th className="text-left p-3 font-semibold">Claim ID</th>
-                                <th className="text-left p-3 font-semibold">Category</th>
-                                <th className="text-left p-3 font-semibold">Date</th>
-                                <th className="text-left p-3 font-semibold">Amount</th>
-                                <th className="text-left p-3 font-semibold">Status</th>
-                                <th className="text-left p-3 font-semibold">Description</th>
-                                <th className="text-left p-3 font-semibold">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {claims.map((claim) => (
-                                <tr key={claim.id} className="border-b hover:bg-gray-50">
-                                    <td className="p-3">{claim.id}</td>
-                                    <td className="p-3">{claim.category}</td>
-                                    <td className="p-3">{claim.date}</td>
-                                    <td className="p-3">${claim.amount.toFixed(2)}</td>
-                                    <td className="p-3">
-                                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(claim.status)}`}>{claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}</span>
-                                    </td>
-                                    <td className="p-3">{claim.description}</td>
-                                    <td className="p-3">
-                                        <div className="flex gap-2">
-                                            <button className="bg-blue-700 text-white py-2 px-2 hover:bg-blue-900">View JPEG</button>
-                                            <button className="bg-red-700 text-white py-2 px-2 hover:bg-red-900">View PDF</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                {/* Empty state (for when there are no claims) */}
-                {claims.length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
-                        <p>No claims found</p>
+                {/* Main Content */}
+                <main className="max-w-7xl mx-auto px-6 py-8">
+                    {/* Welcome Section */}
+                    <div className="mb-6">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-2">Hello, {firstName} {lastName}!</h2>
+                        <p className="text-gray-600">View your claim status and history</p>
                     </div>
-                )}
+
+                    {/* Claim Status & History Section */}
+                    <div className="space-y-6">
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
+                                <h3 className="text-xl font-bold text-gray-900">Claim Status & History</h3>
+                                <Link href="/employee/claim-submit">
+                                    <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition font-medium">
+                                        Create New Claim
+                                    </button>
+                                </Link>
+                            </div>
+
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm text-left">
+                                    <thead className="bg-slate-100 text-slate-600 uppercase text-xs">
+                                        <tr>
+                                            <th className="px-6 py-4">Claim ID</th>
+                                            <th className="px-6 py-4">Category</th>
+                                            <th className="px-6 py-4">Date</th>
+                                            <th className="px-6 py-4">Amount</th>
+                                            <th className="px-6 py-4">Status</th>
+                                            <th className="px-6 py-4">Description</th>
+                                            <th className="px-6 py-4">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {claims.map((claim) => (
+                                            <tr key={claim.id} className="border-t hover:bg-slate-50 transition">
+                                                <td className="px-6 py-4 font-medium text-gray-900">{claim.id}</td>
+                                                <td className="px-6 py-4 text-gray-700">{claim.category}</td>
+                                                <td className="px-6 py-4 text-gray-700">{claim.date}</td>
+                                                <td className="px-6 py-4 font-semibold text-gray-900">${claim.amount.toFixed(2)}</td>
+                                                <td className="px-6 py-4">
+                                                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(claim.status)}`}>
+                                                        {claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-700">{claim.description}</td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex gap-2">
+                                                        <button className="bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700 transition text-xs font-medium">
+                                                            View JPEG
+                                                        </button>
+                                                        <button className="bg-slate-600 text-white px-3 py-1.5 rounded-md hover:bg-slate-700 transition text-xs font-medium">
+                                                            View PDF
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Empty state (for when there are no claims) */}
+                            {claims.length === 0 && (
+                                <div className="text-center py-12">
+                                    <p className="text-gray-500 text-lg">No claims found</p>
+                                    <p className="text-gray-400 text-sm mt-2">Get started by creating your first claim</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </main>
             </div>
         </div>
     );
