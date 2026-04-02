@@ -18,9 +18,7 @@
  */
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from "next/link";
-import { useRouter } from 'next/navigation';
+import EmployeeClaimSubmit from "@/components/employeeClaimSubmit";
 
 /**
  * EmployeeClaimSubmit Component
@@ -235,5 +233,17 @@ export default function EmployeeClaimSubmit() {
                 </main>
             </div>
         </div>
-    );
-}
+
+
+export default async function page() {
+
+
+        return (
+            <>
+                <EmployeeClaimSubmit />
+            </>
+        );
+    }
+
+
+

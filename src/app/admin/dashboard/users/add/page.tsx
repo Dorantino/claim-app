@@ -20,6 +20,7 @@ export default function AddEmployee() {
     const [province, setProvince] = useState("");
     const [postalCode, setPostalCode] = useState("");
     const [country, setCountry] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
 
     const [loading, setLoading] = useState<boolean>(false);
     const [showError, setShowError] = useState<boolean>(false);
@@ -45,7 +46,7 @@ export default function AddEmployee() {
         setSuccessMessage("");
         setLoading(true);
         try {
-            const responseData = await sendJSONData(POST_URL, { firstName, lastName, email, password, dob, street, city, province, postalCode, country });
+            const responseData = await sendJSONData(POST_URL, { firstName, lastName, email, password, dob, street, city, province, postalCode, country, phoneNumber });
 
             if (!responseData) {
                 setErrorMessage("Network error. Please try again.");
@@ -69,6 +70,7 @@ export default function AddEmployee() {
                 setProvince("");
                 setPostalCode("");
                 setCountry("");
+                setPhoneNumber("");
 
                 router.push("/admin/dashboard/users");
                 router.refresh();
@@ -201,6 +203,21 @@ export default function AddEmployee() {
                                     className="w-full px-3 py-2 border rounded"
                                 />
                             </div>
+
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium mb-1">
+                                    Phone number
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="123-456-7890"
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    required
+                                    className="w-full px-3 py-2 border rounded"
+                                />
+                            </div>
+
 
                             <div className="md:col-span-2">
                                 <label className="block text-sm font-medium mb-1">

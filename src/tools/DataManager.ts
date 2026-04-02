@@ -68,6 +68,7 @@ export async function addUser(request: NextRequest) {
         const email = sanitizeHtml(body.email);
         const password = sanitizeHtml(body.password);
         const DOB = sanitizeHtml(body.dob);
+        const phoneNumber = sanitizeHtml(body.phoneNumber);
 
         const address = {
             street: sanitizeHtml(body.street),
@@ -85,6 +86,23 @@ export async function addUser(request: NextRequest) {
 
         const existingUser = await users.findOne({ email });
 
+        // Generate WY ID
+        const lastUser = await users
+            .find({ wyId: { $exists: true } })
+            .sort({ wyId: -1 })
+            .limit(1)
+            .toArray();
+
+        let newWyId = "WY-001";
+
+        if (lastUser.length > 0 && lastUser[0].wyId) {
+            const lastId = lastUser[0].wyId;
+            const number = parseInt(lastId.split("-")[1]);
+            const nextNumber = number + 1;
+
+            newWyId = `WY-${nextNumber.toString().padStart(3, "0")}`;
+        }
+
         if (existingUser) {
             return NextResponse.json(
                 { error: "User already exists" },
@@ -98,6 +116,8 @@ export async function addUser(request: NextRequest) {
             email,
             DOB: new Date(DOB),
             address,
+            phoneNumber,
+            wyId: newWyId,
             passwordHash,
             role: "EMPLOYEE",
             createdAt: new Date()
@@ -258,6 +278,33 @@ export async function getEmployeeClaims(userId?: string) {
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
 
+    } finally {
+        await mongoClient.close();
+    }
+}
+
+export async function getEmployees() {
+    const mongoClient = new MongoClient(MONGO_URL);
+
+    try {
+        await mongoClient.connect();
+
+        const db = mongoClient.db(MONGO_DB_NAME);
+        const users = db.collection("users");
+
+        const employees = await users
+            .find({ role: "EMPLOYEE" })
+            .toArray();
+
+        return employees.map(user => ({
+            id: user._id.toString(),
+            firstName: user.firstName,
+            lastName: user.lastName
+        }));
+
+    } catch (error: any) {
+        console.log(`Error: ${error.message}`);
+        throw error;
     } finally {
         await mongoClient.close();
     }

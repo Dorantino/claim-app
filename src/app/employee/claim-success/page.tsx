@@ -71,5 +71,20 @@ export default function ClaimSent() {
                 </div>
             </main>
         </div>
-    );
-}
+
+import EmployeeClaimSuccess from "@/components/employeeClaimSuccess";
+
+
+
+    export default async function page() {
+
+
+        return (
+            <>
+                <EmployeeClaimSuccess />
+            </>
+        );
+    }
+
+
+
