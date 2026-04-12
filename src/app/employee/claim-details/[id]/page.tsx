@@ -4,15 +4,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-/**
- * Employee Claim Details Page
- * 
- * Displays full details of a selected claim including:
- * - Claim info
- * - Status
- * - Rejection reason (if rejected)
- */
-
 export default function EmployeeClaimDetails() {
     const params = useParams<{ id: string }>();
     const router = useRouter();
@@ -23,30 +14,39 @@ export default function EmployeeClaimDetails() {
 
     useEffect(() => {
         const fetchClaim = async () => {
-            const userId = localStorage.getItem("userId");
+            try {
+                const res = await fetch(`/api/employee/claims`, {
+                    credentials: "include"
+                });
 
-            if (!userId) {
-                router.push("/employee/login");
-                return;
+                if (res.status === 401) {
+                    window.location.href = "/employee/login";
+                    return;
+                }
+
+                const data = await res.json();
+
+                if (data.success) {
+                    const found = data.claims.find((c: any) => c.id === id);
+                    setClaim(found);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
             }
-
-            const res = await fetch(`/api/employee/claims?userId=${userId}`);
-            const data = await res.json();
-
-            if (data.success) {
-                const found = data.claims.find((c: any) => c.id === id);
-                setClaim(found);
-            }
-
-            setLoading(false);
         };
 
         fetchClaim();
-    }, [id, router]);
+    }, [id]);
 
-    const handleLogout = () => {
-        localStorage.removeItem("userId");
-        router.push("/employee/login");
+    const handleLogout = async () => {
+        await fetch("/api/logout", {
+            method: "POST",
+            credentials: "include"
+        });
+
+        window.location.href = "/employee/login";
     };
 
     const getStatusColor = (status: string) => {
@@ -62,13 +62,7 @@ export default function EmployeeClaimDetails() {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                Loading...
-            </div>
-        );
-    }
+    if (loading) return null;
 
     if (!claim) {
         return (
@@ -105,22 +99,18 @@ export default function EmployeeClaimDetails() {
                 </div>
             </header>
 
-            {/* Main */}
             <main className="max-w-5xl mx-auto px-6 py-8">
 
-                {/* Back */}
                 <Link href="/employee/claim-dashboard">
                     <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition mb-6">
                         Back to Dashboard
                     </button>
                 </Link>
 
-                {/* Title */}
                 <h2 className="text-3xl font-bold text-gray-900 mb-6">
                     Claim Details - {claim.id}
                 </h2>
 
-                {/* Card */}
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 space-y-6">
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -145,18 +135,37 @@ export default function EmployeeClaimDetails() {
                         <p>
                             <strong>Status:</strong><br />
                             <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(claim.status)}`}>
-                                {claim.status.charAt(0).toUpperCase() + claim.status.slice(1)}
+                                {claim.status}
                             </span>
                         </p>
                     </div>
 
-                    {/* Description */}
                     <div>
                         <strong>Description:</strong>
                         <p className="text-gray-700 mt-1">{claim.description}</p>
                     </div>
 
-                    {/* Rejection Reason */}
+
+                    {claim.receipts && claim.receipts.length > 0 && (
+                        <div className="mt-6">
+                            <h3 className="text-lg font-semibold mb-2">Receipts</h3>
+
+                            <div className="flex flex-wrap gap-4">
+                                {claim.receipts.map((file: string, index: number) => (
+                                    <img
+                                        key={index}
+                                        src={`/uploads/${file}`}
+                                        alt="Receipt"
+                                        className="w-48 h-48 object-cover rounded-lg border"
+                                        onError={(e) => {
+                                            e.currentTarget.src = "/images/placeholder.png";
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {claim.status === "rejected" && (
                         <div className="bg-red-50 border border-red-200 rounded-md p-4">
                             <strong className="text-red-700">Rejection Reason:</strong>

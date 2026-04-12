@@ -67,7 +67,7 @@ export default function AdminSidebar() {
                         await fetch("/api/logout", { method: "POST", credentials: "include" },);
                         window.location.href = "/admin/login";
                     }}
-                    className="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700 transition font-medium"
+                    className="w-full bg-gray-400 text-white py-2 rounded-md hover:bg-gray-600 transition font-medium"
                 >
                     Log Out
                 </button>

@@ -83,6 +83,7 @@ export default function ClaimCatagory({ employeeId, isAdmin }: { employeeId?: st
     const params = useSearchParams();
 
     const isAdminFromUrl = params.get("admin") === "true";
+    const employeeIdFromUrl = params.get("employeeId");
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -234,22 +235,41 @@ export default function ClaimCatagory({ employeeId, isAdmin }: { employeeId?: st
         setSubmitting(true);
 
         try {
+            const formData = new FormData();
+
+            formData.append("category", selectedCategory);
+            formData.append("description", claimDescription);
+            formData.append("amount", claimAmount.toString());
+
+            receiptImages.forEach(file => {
+                formData.append("receipts", file);
+            });
+
+            if (selectedCategory === "TRAVEL") {
+                formData.append("travelDetails", JSON.stringify({
+                    startLocation: returnTrip,
+                    endLocation: destination
+                }));
+            }
+
+            if (selectedCategory === "MEDICAL") {
+                formData.append("medicalDetails", JSON.stringify({
+                    specialExposure: facehuggerExposure
+                }));
+            }
+
+            if (isAdminFromUrl || isAdmin) {
+                if (!employeeIdFromUrl) {
+                    alert("Employee required");
+                    return;
+                }
+
+                formData.append("employeeId", employeeIdFromUrl);
+            }
+
             const response = await fetch('/api/employee/submitClaim', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    category: selectedCategory,
-                    description: claimDescription,
-                    amount: claimAmount,
-                    receipts: receiptImages.map(file => file.name),
-                    travelDetails: selectedCategory === 'TRAVEL' ? {
-                        startLocation: returnTrip,
-                        endLocation: destination
-                    } : null,
-                    medicalDetails: selectedCategory === 'MEDICAL' ? {
-                        specialExposure: facehuggerExposure
-                    } : null
-                })
+                body: formData
             });
 
             const result = await response.json();
@@ -263,6 +283,7 @@ export default function ClaimCatagory({ employeeId, isAdmin }: { employeeId?: st
             } else {
                 alert(result.error);
             }
+
         } catch (err) {
             console.error(err);
             alert("Error submitting claim");
@@ -270,7 +291,6 @@ export default function ClaimCatagory({ employeeId, isAdmin }: { employeeId?: st
             setSubmitting(false);
         }
     };
-
 
     return (
         <div className="min-h-screen bg-gray-100">

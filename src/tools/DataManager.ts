@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import fs from "fs";
+import path from "path";
 
 
 
@@ -335,6 +337,7 @@ export async function getEmployeeClaims() {
             status: claim.status.toLowerCase(),
             description: claim.description,
             comment: claim.comment || "",
+            receipts: claim.receipts || []
         }));
 
     } catch (error: any) {
@@ -361,7 +364,9 @@ export async function getEmployees() {
         return employees.map(user => ({
             id: user._id.toString(),
             firstName: user.firstName,
-            lastName: user.lastName
+            lastName: user.lastName,
+            wyId: user.wyId || "",
+            phoneNumber: user.phoneNumber || ""
         }));
 
     } catch (error: any) {
@@ -501,7 +506,6 @@ export async function deleteCategory(request: NextRequest, id: string) {
 /* --------------------------------------------------------CLAIM CREATION*/
 
 export async function createClaim(request: NextRequest) {
-
     const token = request.cookies.get("token")?.value;
 
     if (!token) {
@@ -516,27 +520,75 @@ export async function createClaim(request: NextRequest) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-
     const mongoClient = new MongoClient(MONGO_URL);
 
     try {
         await mongoClient.connect();
-        const body = await request.json();
 
-        // Sanitize inputs
-        const employeeId = new ObjectId(decoded.userId);
-        const category = sanitizeHtml(body.category);
-        const description = sanitizeHtml(body.description);
-        const amount = parseFloat(sanitizeHtml(body.amount.toString()));
+        const formData = await request.formData();
+
+        let employeeId: ObjectId;
+
+        if (decoded.role === "ADMIN") {
+            const formEmployeeId = formData.get("employeeId") as string;
+
+            if (!formEmployeeId) {
+                return NextResponse.json(
+                    { error: "Employee required" },
+                    { status: 400 }
+                );
+            }
+
+            employeeId = new ObjectId(formEmployeeId);
+
+        } else {
+            employeeId = new ObjectId(decoded.userId);
+        }
+
+        const category = sanitizeHtml(formData.get("category") as string);
+        const description = sanitizeHtml(formData.get("description") as string);
+        const amount = parseFloat(
+            sanitizeHtml(formData.get("amount") as string)
+        );
+
+        const files = formData.getAll("receipts") as File[];
+
+        const uploadDir = path.join(process.cwd(), "public/uploads");
+
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const fileNames: string[] = [];
+
+        for (const file of files) {
+            if (!file || file.size === 0) continue;
+
+            const bytes = await file.arrayBuffer();
+            const buffer = Buffer.from(bytes);
+
+            const safeName = file.name.replace(/\s+/g, "_");
+
+            const fileName = `${Date.now()}-${safeName}`;
+            const filePath = path.join(uploadDir, fileName);
+
+            fs.writeFileSync(filePath, buffer);
+
+            fileNames.push(fileName);
+        }
 
         const db = mongoClient.db(MONGO_DB_NAME);
         const claims = db.collection("claims");
 
-        // Generate unique claim ID
         const claimCount = await claims.countDocuments();
-        const claimId = `CLM-${String(claimCount + 1).padStart(3, '0')}`;
+        const claimId = `CLM-${String(claimCount + 1).padStart(3, "0")}`;
 
-        // Build claim object
+        const travelDetailsRaw = formData.get("travelDetails") as string | null;
+        const medicalDetailsRaw = formData.get("medicalDetails") as string | null;
+
+        const travelDetails = travelDetailsRaw ? JSON.parse(travelDetailsRaw) : null;
+        const medicalDetails = medicalDetailsRaw ? JSON.parse(medicalDetailsRaw) : null;
+
         const newClaim: any = {
             claimId,
             employeeId,
@@ -544,29 +596,25 @@ export async function createClaim(request: NextRequest) {
             category,
             description,
             amount,
-            receipts: body.receipts || [],
+            receipts: fileNames,
             status: "PENDING",
-            createdAt: new Date()
+            createdAt: new Date(),
+            travelDetails: null,
+            medicalDetails: null
         };
 
-        // Add category-specific details
-        if (category === "TRAVEL" && body.travelDetails) {
+        if (category === "TRAVEL" && travelDetails) {
             newClaim.travelDetails = {
-                startLocation: sanitizeHtml(body.travelDetails.startLocation),
-                endLocation: sanitizeHtml(body.travelDetails.endLocation),
-                estimatedMileage: body.travelDetails.estimatedMileage || 0
+                startLocation: sanitizeHtml(travelDetails.startLocation),
+                endLocation: sanitizeHtml(travelDetails.endLocation),
+                estimatedMileage: travelDetails.estimatedMileage || 0
             };
-            newClaim.medicalDetails = null;
+        }
 
-        } else if (category === "MEDICAL" && body.medicalDetails) {
+        if (category === "MEDICAL" && medicalDetails) {
             newClaim.medicalDetails = {
-                specialExposure: body.medicalDetails.specialExposure || false
+                specialExposure: medicalDetails.specialExposure || false
             };
-            newClaim.travelDetails = null;
-
-        } else {
-            newClaim.travelDetails = null;
-            newClaim.medicalDetails = null;
         }
 
         const result = await claims.insertOne(newClaim);
@@ -588,7 +636,6 @@ export async function createClaim(request: NextRequest) {
             { error: error.message },
             { status: 500 }
         );
-
     } finally {
         await mongoClient.close();
     }
@@ -639,7 +686,7 @@ export async function updateUserProfile(request: NextRequest) {
         const users = db.collection("users");
 
         const result = await users.updateOne(
-            { _id: new ObjectId(decoded.userId) }, // 🔥 from JWT
+            { _id: new ObjectId(decoded.userId) },
             {
                 $set: {
                     phoneNumber,

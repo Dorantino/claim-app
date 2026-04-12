@@ -42,9 +42,11 @@ import { useRouter } from 'next/navigation';
  */
 export default function EmployeeClaimSubmit({
     employeeId,
+    employee,
     isAdmin
 }: {
     employeeId?: string;
+    employee?: any;
     isAdmin?: boolean;
 }) {
 
@@ -65,29 +67,34 @@ export default function EmployeeClaimSubmit({
      * Verifies user is logged in on component mount and Fetches user to pre-fill WY ID and phone number.
      */
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const res = await fetch(`/api/employee/profile`);
+        const loadProfile = async () => {
+            // ADMIN FLOW → use passed employee
+            if (employee) {
+                setWyId(employee.wyId || "");
+                setPhoneNumber(employee.phoneNumber || "");
+                return;
+            }
 
-                if (res.status === 401) {
-                    router.push('/employee/login');
-                    return;
+            // EMPLOYEE FLOW → fetch own profile
+            if (!isAdmin) {
+                try {
+                    const res = await fetch("/api/employee/profile");
+                    const data = await res.json();
+
+                    setWyId(data.wyId || "");
+                    setPhoneNumber(data.phoneNumber || "");
+                } catch (err) {
+                    console.error("Failed to load profile", err);
                 }
-
-                const data = await res.json();
-
-                if (data.success && data.profile) {
-                    setWyId(data.profile.wyId || '');
-                    setPhoneNumber(data.profile.phoneNumber || '');
-                }
-            } catch (err) {
-                console.error(err);
             }
         };
 
-        fetchProfile();
-    }, [router]);
+        loadProfile();
+    }, [employee, isAdmin]);
 
+    console.log("EmployeeClaimSubmit rendered with employeeId:", employeeId, "isAdmin:", isAdmin);
+    console.log("Current WY ID:", wyId, "Current Phone Number:", phoneNumber);
+    console.log("Employee data from props:", employee);
 
     /**
      * Form Validation Check
@@ -123,7 +130,8 @@ export default function EmployeeClaimSubmit({
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     phoneNumber,
-                    wyId
+                    wyId,
+                    userId: employeeId
                 })
             });
 
@@ -131,7 +139,7 @@ export default function EmployeeClaimSubmit({
 
             if (result.success) {
                 if (isAdmin) {
-                    router.push(`/admin/dashboard/claims/create/category?admin=true`);
+                    router.push(`/admin/dashboard/claims/create/category?admin=true&employeeId=${employeeId}`);
                 } else {
                     router.push('/employee/claim-category');
                 }
