@@ -1,3 +1,27 @@
+/**
+ * Reports Page Component
+ *
+ * Admin reporting dashboard for viewing claim counts and category charts.
+ * Supports optional date range filtering via query parameters.
+ *
+ * Features:
+ * - Date filter inputs with route-based filtering
+ * - Summary cards for total, approved, rejected, and pending claims
+ * - Category breakdown chart using Recharts
+ * - Default values if claim count data is missing
+ *
+ * Data Shape:
+ * - claimCounts.total: number
+ * - claimCounts.approved: number
+ * - claimCounts.rejected: number
+ * - claimCounts.pending: number
+ * - claimCounts.byCategory: Array<{ category: string, count: number }>
+ *
+ * @author Seth Korantwi
+ * @component ReportsPage
+ * @param {{ claimCounts: any }} props - Dashboard metrics and chart data
+ * @returns {JSX.Element} Admin reports dashboard
+ */
 "use client"
 
 import Chart from "@/components/Barchart";
@@ -25,8 +49,10 @@ export default function ReportsPage({ claimCounts }: { claimCounts: any }) {
 
     return (
         <div className="space-y-6">
+            {/* Page title and section header */}
             <h1 className="text-3xl font-bold border-b border-slate-700 pb-4">Reports</h1>
 
+            {/* Date filter controls */}
             <div className="bg-white p-4 rounded-lg shadow flex gap-4 items-end">
                 <div>
                     <label className="block text-sm font-medium">Start Date</label>
@@ -43,7 +69,7 @@ export default function ReportsPage({ claimCounts }: { claimCounts: any }) {
                 </button>
             </div>
 
-
+            {/* Summary cards for claim totals */}
             <div className="grid grid-cols-4 gap-6">
                 <div className="bg-white p-6 rounded-lg shadow">
                     <h2 className="text-lg font-semibold">Total Claims</h2>
@@ -66,6 +92,7 @@ export default function ReportsPage({ claimCounts }: { claimCounts: any }) {
                 </div>
             </div>
 
+            {/* Category breakdown chart */}
             <div className="bg-white p-4 rounded-lg shadow h-84 flex items-center justify-center text-gray-400">
                 <Chart data={claimCounts.byCategory} />
             </div>

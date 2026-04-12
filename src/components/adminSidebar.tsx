@@ -1,3 +1,28 @@
+/**
+Admin Sidebar Component
+
+Collapsible navigation sidebar for the admin dashboard panel.
+Provides quick access to main admin sections with active state highlighting.
+
+Features:
+- Collapsible/expandable sidebar with smooth transitions
+- Active route highlighting based on current pathname
+- Navigation items with icons for Claims, Reports, Users, and Categories
+- Logout functionality with API call and redirect
+- Version display at bottom
+- Responsive design with Tailwind CSS
+
+Navigation Items:
+- Claims: /admin/dashboard/claims
+- Reports: /admin/dashboard/reports
+- User Management: /admin/dashboard/users
+- Category Management: /admin/dashboard/categories
+
+@author Seth Korantwi
+@component AdminSidebar
+@uses usePathname (Next.js navigation)
+@uses lucide-react icons
+*/
 "use client";
 
 import { useState } from "react";
@@ -12,6 +37,15 @@ const navItems = [
     { label: "Category Management", href: "/admin/dashboard/categories", icon: Layers }
 ];
 
+/**
+AdminSidebar Component
+
+Renders a collapsible sidebar navigation for admin dashboard.
+Manages collapse state and highlights active navigation items.
+
+@component
+@returns {JSX.Element} Collapsible admin navigation sidebar
+*/
 export default function AdminSidebar() {
     const pathname = usePathname();
     const [collapsed, setCollapsed] = useState(false);

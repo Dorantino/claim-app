@@ -1,3 +1,14 @@
+/**
+ * DataManager module
+ *
+ * Centralized database and API helper functions for user authentication, profile
+ * management, claim creation, reporting, and category handling.
+ *
+ * This module uses MongoDB for persistence, JWT for auth, and Next.js server-side
+ * request/response helpers for route integration.
+ *
+ * @module DataManager
+ */
 import bcrypt from "bcrypt";
 import { MongoClient, ObjectId } from "mongodb";
 import sanitizeHtml from 'sanitize-html';
@@ -19,6 +30,15 @@ const MONGO_DB_NAME: string = "dbData";
 
 
 /* ---------------------------------------------AUTHENTICATION */
+/**
+ * Authenticate a user and issue a JWT cookie.
+ *
+ * Validates email and password against the users collection,
+ * returns a secure cookie on success, and redirects admin/employee flows.
+ *
+ * @param {NextRequest} request - Incoming login request containing email and password
+ * @returns {NextResponse} JSON response with authentication result
+ */
 export async function loginUser(request: NextRequest) {
     const mongoClient = new MongoClient(MONGO_URL);
 
@@ -82,6 +102,15 @@ export async function loginUser(request: NextRequest) {
 }
 
 
+/**
+ * Register a new employee user.
+ *
+ * Sanitizes inputs, hashes the password, generates a WY employee ID,
+ * and inserts a new user document with default employee role.
+ *
+ * @param {NextRequest} request - Incoming request with user profile payload
+ * @returns {NextResponse} JSON response indicating success or validation errors
+ */
 export async function addUser(request: NextRequest) {
     const mongoClient = new MongoClient(MONGO_URL);
 
@@ -167,6 +196,13 @@ export async function addUser(request: NextRequest) {
 
 
 /* --------------------------------------------------------USER MANAGEMENT */
+/**
+ * Retrieve all users from the database.
+ *
+ * Returns a sanitized list of users sorted by role.
+ *
+ * @returns {Promise<Array>} Array of user summary objects for admin listing
+ */
 export async function getUsers() {
     let mongoClient: MongoClient = new MongoClient(MONGO_URL);
     let allUsers: any[];
@@ -198,6 +234,16 @@ export async function getUsers() {
 }
 
 
+/**
+ * Delete a user by ID.
+ *
+ * Sanitizes the provided ID and removes the matching user document.
+ * Returns 404 when no user is found.
+ *
+ * @param {NextRequest} request - Incoming request context
+ * @param {string} id - User document ID to delete
+ * @returns {NextResponse} JSON response indicating deletion status
+ */
 export async function deleteUser(request: NextRequest, id: string) {
     let mongoClient: MongoClient = new MongoClient(MONGO_URL);
 
@@ -232,6 +278,14 @@ export async function deleteUser(request: NextRequest, id: string) {
 
 /* -------------------------------------------------------------CLAIMS*/
 
+/**
+ * Retrieve all claims for admin review.
+ *
+ * Validates the admin JWT cookie, enforces admin access,
+ * and returns claims with employee details joined from the users collection.
+ *
+ * @returns {Promise<Array>} Array of admin claim objects with employee metadata
+ */
 export async function getAdminClaims() {
     const token = (await cookies()).get("token")?.value;
 
@@ -300,7 +354,13 @@ export async function getAdminClaims() {
 }
 
 
-// Show cliams table for enployees -- Robert Jones
+/**
+ * Retrieve claims for the authenticated employee.
+ *
+ * Checks the JWT cookie, verifies employee role, and returns an employee-specific claim list.
+ *
+ * @returns {Promise<Array>} Array of claims for the current employee
+ */
 export async function getEmployeeClaims() {
     const token = (await cookies()).get("token")?.value;
 
@@ -350,6 +410,13 @@ export async function getEmployeeClaims() {
     }
 }
 
+/**
+ * Retrieve a list of employee users only.
+ *
+ * Returns simplified employee records for admin dropdowns or user selection.
+ *
+ * @returns {Promise<Array>} Array of employee summary objects
+ */
 export async function getEmployees() {
     const mongoClient = new MongoClient(MONGO_URL);
 
@@ -383,6 +450,14 @@ export async function getEmployees() {
 
 /* ----------------------------------------------------------CATEGORY MANAGEMENT*/
 
+/**
+ * Add a new claim category.
+ *
+ * Sanitizes the category name, prevents duplicates, and inserts the category record.
+ *
+ * @param {NextRequest} request - Incoming request containing category name
+ * @returns {NextResponse} JSON response indicating success or duplicate error
+ */
 export async function addCategory(request: NextRequest) {
     const mongoClient = new MongoClient(MONGO_URL);
 
@@ -423,6 +498,13 @@ export async function addCategory(request: NextRequest) {
 }
 
 
+/**
+ * Retrieve claim categories.
+ *
+ * Returns categories ordered by default flag and label, with formatted dates.
+ *
+ * @returns {Promise<Array>} Array of category objects for admin management
+ */
 export async function getCategories() {
     const mongoClient = new MongoClient(MONGO_URL);
 
@@ -457,6 +539,15 @@ export async function getCategories() {
 }
 
 
+/**
+ * Delete a claim category if it is not default and not used by existing claims.
+ *
+ * Validates category existence and usage before removal.
+ *
+ * @param {NextRequest} request - Incoming request context
+ * @param {string} id - Category document ID to delete
+ * @returns {NextResponse} JSON response indicating result or validation error
+ */
 export async function deleteCategory(request: NextRequest, id: string) {
     const mongoClient = new MongoClient(MONGO_URL);
 
@@ -507,6 +598,15 @@ export async function deleteCategory(request: NextRequest, id: string) {
 
 /* --------------------------------------------------------CLAIM CREATION*/
 
+/**
+ * Create a new claim record from form data.
+ *
+ * Authenticates using JWT, accepts multipart claim details and receipts,
+ * saves uploaded files to disk, and inserts a new claim document.
+ *
+ * @param {NextRequest} request - Incoming multipart/form-data request
+ * @returns {NextResponse} JSON response with claim creation result
+ */
 export async function createClaim(request: NextRequest) {
     const token = request.cookies.get("token")?.value;
 
@@ -646,6 +746,14 @@ export async function createClaim(request: NextRequest) {
 
 
 /* -----------------------------------------------------------USER PROFILE*/
+/**
+ * Update the authenticated user's profile.
+ *
+ * Verifies JWT auth, sanitizes input, and updates phone number and WY ID.
+ *
+ * @param {NextRequest} request - Incoming request with profile data
+ * @returns {NextResponse} JSON response indicating update status
+ */
 export async function updateUserProfile(request: NextRequest) {
     const mongoClient = new MongoClient(MONGO_URL);
 
@@ -717,6 +825,14 @@ export async function updateUserProfile(request: NextRequest) {
 }
 
 
+/**
+ * Retrieve a single user's profile by ID.
+ *
+ * Returns sanitized profile data for frontend rendering.
+ *
+ * @param {string} userId - MongoDB user document ID
+ * @returns {Promise<Object>} Sanitized user profile object
+ */
 export async function getUserProfile(userId: string) {
     const mongoClient = new MongoClient(MONGO_URL);
 
@@ -748,6 +864,15 @@ export async function getUserProfile(userId: string) {
 
 /* ------------------------------------------------------REPORTS*/
 
+/**
+ * Get claim counts grouped by status for reporting.
+ *
+ * Optionally filters claims by date range.
+ *
+ * @param {string=} start - Optional start date filter
+ * @param {string=} end - Optional end date filter
+ * @returns {Promise<Object>} Claim totals for dashboard cards
+ */
 export async function getClaimCounts(start?: string, end?: string) {
 
     const mongoClient = new MongoClient(MONGO_URL);
@@ -791,6 +916,15 @@ export async function getClaimCounts(start?: string, end?: string) {
     }
 }
 
+/**
+ * Get claim counts grouped by category.
+ *
+ * Supports optional date range filtering and groups claims for charting.
+ *
+ * @param {string=} start - Optional start date filter
+ * @param {string=} end - Optional end date filter
+ * @returns {Promise<Array>} Array of category count objects
+ */
 export async function getClaimsByCategory(start?: string, end?: string) {
 
     const mongoClient = new MongoClient(MONGO_URL);
@@ -830,6 +964,15 @@ export async function getClaimsByCategory(start?: string, end?: string) {
     }
 }
 
+/**
+ * Update claim status to APPROVED or REJECTED.
+ *
+ * Validates status values and requires a rejection comment when rejecting.
+ *
+ * @param {NextRequest} request - Incoming request containing status and optional comment
+ * @param {string} id - Claim ID to update
+ * @returns {NextResponse} JSON response indicating update result
+ */
 export async function updateStatus(request: NextRequest, id: string) {
     const mongoClient = new MongoClient(MONGO_URL);
 
