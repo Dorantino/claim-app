@@ -63,13 +63,17 @@ export default function Login() {
 
         const role = result.data.role;
 
-        if (role === "ADMIN") {
-            window.location.href = "/admin/dashboard/claims";
-        } else if (role === "EMPLOYEE") {
-            window.location.href = "/employee/claim-dashboard";
-        } else {
-            alert("Access Denied: Invalid Role");
+        if (role !== "EMPLOYEE") {
+            await fetch("/api/logout", {
+                method: "POST",
+                credentials: "include"
+            });
+
+            alert("Access Denied: Employees only");
+            return;
         }
+
+        window.location.href = "/employee/claim-dashboard";
     };
 
     return (

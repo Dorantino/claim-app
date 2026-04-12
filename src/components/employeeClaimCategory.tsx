@@ -96,20 +96,7 @@ export default function ClaimCatagory({ employeeId, isAdmin }: { employeeId?: st
         checkAuth();
     }, [router]);
 
-    /**
-     * Handle Logout
-     * 
-     * Clears user session data from localStorage and redirects
-     * to the employee login page.
-     * 
-     * @author Robert Jones
-     * @function handleLogout
-     * @returns {void}
-     */
-    const handleLogout = async () => {
-        await fetch("/api/employee/logout", { method: "POST" });
-        router.push("/employee/login");
-    };
+
 
     /**
      * Categories Fetching Effect
@@ -298,12 +285,6 @@ export default function ClaimCatagory({ employeeId, isAdmin }: { employeeId?: st
                                 <p className="text-sm text-gray-600">Employee Claims Service</p>
                             </div>
                         </div>
-                        <button
-                            onClick={handleLogout}
-                            className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition font-medium"
-                        >
-                            Log Out
-                        </button>
                     </div>
                 </div>
             </header>

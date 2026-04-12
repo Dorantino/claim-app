@@ -154,9 +154,20 @@ export default function EmployeeClaimForm() {
      * @returns {void}
      */
     const handleLogout = async () => {
-        await fetch("/api/employee/logout", { method: "POST" });
-        router.push("/employee/login");
+        await fetch("/api/logout", {
+            method: "POST",
+            credentials: "include"
+        });
+
+        window.location.href = "/employee/login";
     };
+
+    if (loading) {
+        return (
+            <LoadingOverlay show={loading} bgColor="rgba(17, 24, 39, 0.8)" spinnerColor="#3B82F6" />
+        );
+    }
+
     // Error state
     if (error) {
         return (
@@ -173,7 +184,7 @@ export default function EmployeeClaimForm() {
 
     return (
         <div>
-            <LoadingOverlay show={loading} bgColor="rgba(17, 24, 39, 0.8)" spinnerColor="#3B82F6" />
+
             <div className="min-h-screen bg-gray-100">
                 {/* Header */}
                 <header className="bg-white shadow-sm border-b border-gray-200">

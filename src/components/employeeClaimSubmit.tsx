@@ -90,44 +90,6 @@ export default function EmployeeClaimSubmit({
 
 
     /**
-     * Profile Data Fetching Effect
-     * 
-     * Fetches user profile to pre-fill WY ID and phone number.
-     */
-    // useEffect(() => {
-    //     const fetchProfile = async () => {
-    //         const userId = employeeId || localStorage.getItem('userId');
-
-    //         if (userId) {
-    //             const res = await fetch(`/api/employee/profile?userId=${userId}`);
-    //             const data = await res.json();
-
-    //             if (data.success && data.profile) {
-    //                 setWyId(data.profile.wyId);
-    //                 setPhoneNumber(data.profile.phoneNumber);
-    //             }
-    //         }
-    //     };
-
-    //     fetchProfile();
-    // }, [employeeId]);
-
-    /**
-     * Handle Logout
-     * 
-     * Clears user session data from localStorage and redirects
-     * to the employee login page.
-     * 
-     * @author Robert Jones
-     * @function handleLogout
-     * @returns {void}
-     */
-    const handleLogout = async () => {
-        await fetch("/api/employee/logout", { method: "POST" });
-        router.push("/employee/login");
-    };
-
-    /**
      * Form Validation Check
      * 
      * Ensures WY ID and phone number are present.
@@ -200,12 +162,7 @@ export default function EmployeeClaimSubmit({
                                     <p className="text-sm text-gray-600">Employee Claims Service</p>
                                 </div>
                             </div>
-                            <button
-                                onClick={handleLogout}
-                                className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition font-medium"
-                            >
-                                Log Out
-                            </button>
+
                         </div>
                     </div>
                 </header>
