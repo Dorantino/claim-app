@@ -1,3 +1,13 @@
+/**
+ * Employee profile API route.
+ *
+ * Reads the session token from cookies, verifies the JWT, and returns
+ * the authenticated employee profile from DataManager.
+ *
+ * Returns 401 when no token is present or the token is invalid.
+ *
+ * @returns {Promise<Response>} JSON profile object or error response.
+ */
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";

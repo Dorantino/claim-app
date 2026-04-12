@@ -1,3 +1,12 @@
+/**
+ * Admin add employee page.
+ *
+ * Renders a form for creating new employee users and submits the payload
+ * to the admin add user API endpoint.
+ *
+ * @component
+ * @returns {JSX.Element} Add employee form page
+ */
 "use client";
 
 import { useState } from "react";
@@ -10,6 +19,7 @@ export default function AddEmployee() {
     const router = useRouter();
     const POST_URL = "/api/admin/addUser";
 
+    // Form field state for the new employee form
     const [firstName, setFirstName] = useState<string>("");
     const [lastName, setLastName] = useState<string>("");
     const [email, setEmail] = useState<string>("");
@@ -22,6 +32,7 @@ export default function AddEmployee() {
     const [country, setCountry] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
 
+    // UI state for request lifecycle and feedback
     const [loading, setLoading] = useState<boolean>(false);
     const [showError, setShowError] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
@@ -29,8 +40,17 @@ export default function AddEmployee() {
 
 
 
+    /**
+     * Submit handler for the add employee form.
+     *
+     * Prevents default form submission, validates required fields,
+     * sends the employee payload to the admin API, and handles responses.
+     *
+     * @param {React.FormEvent<HTMLFormElement>} e - Form submit event
+     */
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
         if (
             !firstName.trim() ||
             !lastName.trim() ||
@@ -45,14 +65,29 @@ export default function AddEmployee() {
         setShowError(false);
         setSuccessMessage("");
         setLoading(true);
+
+        const payload = {
+            firstName,
+            lastName,
+            email,
+            password,
+            dob,
+            street,
+            city,
+            province,
+            postalCode,
+            country,
+            phoneNumber
+        };
+
         try {
-            const responseData = await sendJSONData(POST_URL, { firstName, lastName, email, password, dob, street, city, province, postalCode, country, phoneNumber });
+            const responseData = await sendJSONData(POST_URL, payload);
 
             if (!responseData) {
                 setErrorMessage("Network error. Please try again.");
                 setShowError(true);
             } else if (responseData.status === 400) {
-                setErrorMessage("Invalid input. Please check your fields.");
+                setErrorMessage(responseData.data?.error || "Invalid input. Please check your fields.");
                 setShowError(true);
             } else if (responseData.status === 500) {
                 setErrorMessage("Server error. Please try again later.");
@@ -95,6 +130,8 @@ export default function AddEmployee() {
                         <h2 className="text-3xl font-semibold text-center mb-8">
                             Add Employee
                         </h2>
+
+                        {/* Display validation and API feedback messages */}
 
                         {showError && (
                             <p className="text-red-500 mb-4">
@@ -249,6 +286,7 @@ export default function AddEmployee() {
 
 
                         <div className="flex gap-4 mt-10">
+                            {/* Form actions: submit new user or cancel */}
                             <button
                                 type="submit"
                                 className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
