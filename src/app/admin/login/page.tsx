@@ -53,27 +53,22 @@ export default function Login() {
      * @returns {Promise<void>}
      */
     const grantAccess = async () => {
-        const result = await sendJSONData("/api/login", {
-            email,
-            password
-        });
+        const result = await sendJSONData("/api/login", { email, password });
 
         if (!result?.data?.success) {
             alert("Access Denied");
             return;
         }
 
-        router.push("/admin/dashboard/claims");
+        const role = result.data.role;
 
-
-
-        // const role = result.data.role;
-
-        // if (role === "ADMIN") {
-        //     router.push("/admin/dashboard/claims");
-        // } else if (!(role === "ADMIN")) {
-        //     alert("Access Denied: You do not have admin privileges.")
-        // }
+        if (role === "ADMIN") {
+            window.location.href = "/admin/dashboard/claims";
+        } else if (role === "EMPLOYEE") {
+            window.location.href = "/employee/claim-dashboard";
+        } else {
+            alert("Access Denied: Invalid Role");
+        }
     };
 
     return (

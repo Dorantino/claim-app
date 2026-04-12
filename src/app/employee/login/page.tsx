@@ -54,17 +54,22 @@ export default function Login() {
      * @returns {Promise<void>}
      */
     const grantAccess = async () => {
-        const result = await sendJSONData("/api/login/", {
-            email,
-            password
-        });
+        const result = await sendJSONData("/api/login", { email, password });
 
         if (!result?.data?.success) {
             alert("Access Denied");
             return;
         }
 
-        router.push("/employee/claim-dashboard");
+        const role = result.data.role;
+
+        if (role === "ADMIN") {
+            window.location.href = "/admin/dashboard/claims";
+        } else if (role === "EMPLOYEE") {
+            window.location.href = "/employee/claim-dashboard";
+        } else {
+            alert("Access Denied: Invalid Role");
+        }
     };
 
     return (

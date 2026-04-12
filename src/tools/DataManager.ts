@@ -54,12 +54,18 @@ export async function loginUser(request: NextRequest) {
             { expiresIn: "1h" }
         );
 
-        const response = NextResponse.json({ success: true });
+        let redirectPath = "/employee/claim-dashboard";
+
+        if (user.role === "ADMIN") {
+            redirectPath = "/admin/dashboard/claims";
+        }
+
+        const response = NextResponse.json({ success: true, role: user.role });
 
         response.cookies.set("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
+            sameSite: "lax",
             path: "/"
         });
 
@@ -242,9 +248,6 @@ export async function getAdminClaims() {
     if (user.role !== "ADMIN") {
         redirect("/admin/login");
     }
-
-
-
 
     let mongoClient: MongoClient = new MongoClient(MONGO_URL);
     let claims: any[];
