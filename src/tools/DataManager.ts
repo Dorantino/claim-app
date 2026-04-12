@@ -282,6 +282,8 @@ export async function getAdminClaims() {
             status: claim.status,
             comment: claim.comment || "",
             imageUrls: (claim.receipts || []).map((file: string) => `/uploads/${file}`),
+            travelDetails: claim.travelDetails || null,
+            medicalDetails: claim.medicalDetails || null,
             date: claim.date?.toISOString(),
             createdAt: claim.createdAt?.toISOString(),
             firstName: claim.employee.firstName,

@@ -168,8 +168,6 @@ export default function EmployeeClaimForm() {
         );
     }
 
-    console.log(claims);
-
     // Error state
     if (error) {
         return (

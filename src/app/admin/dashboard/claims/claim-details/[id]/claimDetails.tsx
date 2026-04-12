@@ -92,7 +92,7 @@ export default function claimDetails({ claims }: any) {
                         <strong>Description:</strong> {foundClaim.description}
                     </p>
 
-                    {/* {foundClaim.imageUrls?.length > 0 && (
+                    {foundClaim.imageUrls?.length > 0 && (
                         <div>
                             <strong>Receipts:</strong>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
@@ -106,11 +106,11 @@ export default function claimDetails({ claims }: any) {
                                 ))}
                             </div>
                         </div>
-                    )} */}
+                    )}
 
                     {foundClaim.category === "TRAVEL" && foundClaim.travelDetails && (
-                        <div>
-                            <strong>Travel Details:</strong>
+                        <div className="mt-4">
+                            <h3 className="font-semibold">Travel Details</h3>
                             <p>From: {foundClaim.travelDetails.startLocation}</p>
                             <p>To: {foundClaim.travelDetails.endLocation}</p>
                             <p>Mileage: {foundClaim.travelDetails.estimatedMileage}</p>

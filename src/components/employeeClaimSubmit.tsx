@@ -92,9 +92,6 @@ export default function EmployeeClaimSubmit({
         loadProfile();
     }, [employee, isAdmin]);
 
-    console.log("EmployeeClaimSubmit rendered with employeeId:", employeeId, "isAdmin:", isAdmin);
-    console.log("Current WY ID:", wyId, "Current Phone Number:", phoneNumber);
-    console.log("Employee data from props:", employee);
 
     /**
      * Form Validation Check
