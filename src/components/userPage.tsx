@@ -1,5 +1,21 @@
+/**
+ * User Management Page Component
+ *
+ * Displays a searchable list of users for admin management.
+ * Includes role badges, delete actions for non-admin users, and a link to add new users.
+ *
+ * Features:
+ * - Search users by first or last name
+ * - Role-based styling for ADMIN vs regular users
+ * - Delete button only for non-admin users
+ * - Empty state when no users match the filter
+ *
+ * @author Seth Korantwi
+ * @component UsersPage
+ * @param {{ Users: any[] }} props - Array of user records
+ * @returns {JSX.Element} Admin user management table
+ */
 "use client";
-
 
 import Link from "next/link";
 import { useState } from "react";
@@ -14,9 +30,10 @@ export default function UsersPage({ Users }: { Users: any[] }) {
 
     return (
         <div className="space-y-6">
+            {/* Page title */}
             <h1 className="text-3xl font-bold border-b border-slate-700 pb-4">User Management</h1>
 
-
+            {/* Search input and add user action */}
             <div className="flex justify-between items-center">
                 <input
                     type="text"
@@ -30,9 +47,9 @@ export default function UsersPage({ Users }: { Users: any[] }) {
                         + Add User
                     </button>
                 </Link>
-
             </div>
 
+            {/* Users table */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
                 <table className="w-full">
                     <thead className="bg-gray-100 text-left">
@@ -51,6 +68,7 @@ export default function UsersPage({ Users }: { Users: any[] }) {
                                 <td className="p-4">{user.firstName} {user.lastName}</td>
                                 <td className="p-4">{user.email}</td>
                                 <td className="p-4">
+                                    {/* Role badge styling */}
                                     <span className={`px-2 py-1 rounded text-xs ${user.role === "ADMIN"
                                         ? "bg-purple-100 text-purple-700"
                                         : "bg-gray-100 text-gray-700"
@@ -60,6 +78,7 @@ export default function UsersPage({ Users }: { Users: any[] }) {
                                 </td>
                                 <td className="p-4">{user.date}</td>
                                 <td className="p-4 space-x-3">
+                                    {/* Only allow deletion for non-admin users */}
                                     {user.role !== "ADMIN" && (
                                         <Link href={`/admin/dashboard/users/delete/${user.id}`}>
                                             <button className="bg-red-600 text-white px-3 py-1 rounded">
@@ -71,8 +90,7 @@ export default function UsersPage({ Users }: { Users: any[] }) {
                             </tr>
                         ))}
 
-
-
+                        {/* Empty state when no users match search */}
                         {filteredUsers.length === 0 && (
                             <tr>
                                 <td
@@ -83,9 +101,7 @@ export default function UsersPage({ Users }: { Users: any[] }) {
                                 </td>
                             </tr>
                         )}
-
                     </tbody>
-
                 </table>
             </div>
         </div>

@@ -1,3 +1,14 @@
+/**
+ * Admin Claim Details Component
+ *
+ * Displays claim details and workflow controls for admin review.
+ * Supports approving or rejecting pending claims with optional rejection comments.
+ * Fetches the claim ID from route params and matches it against supplied claim data.
+ *
+ * @component
+ * @param {{ claims: any[] }} props - List of claims passed from parent route
+ * @returns {JSX.Element} Claim review page for admin
+ */
 "use client";
 
 import { useParams } from "next/navigation";
@@ -21,8 +32,8 @@ export default function claimDetails({ claims }: any) {
     const [comment, setComment] = useState("");
 
 
+    // Find the matching claim record using the route ID
     let foundClaim: any = claims.find((item: any) => item.claimId === id);
-
 
     if (!foundClaim) {
         return <div>Claim not found</div>;
@@ -61,7 +72,7 @@ export default function claimDetails({ claims }: any) {
         <>
             <LoadingOverlay show={loading} bgColor="rgba(3,80,116,0.8)" spinnerColor="#FFFFFF" />
 
-
+            {/* Claim review panel */}
             <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 space-y-8">
                 <div className="flex items-center justify-between">
                     <h1 className="text-3xl font-bold">

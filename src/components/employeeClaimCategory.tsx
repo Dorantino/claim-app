@@ -41,9 +41,11 @@ interface Category {
  * 
  * Main claim submission form with dynamic fields based on selected category.
  * Handles validation, file uploads, and submission to the claims API.
+ * Supports admin claim creation flow via query params.
  * 
  * @author Robert Jones
  * @component
+ * @param {{ employeeId?: string; isAdmin?: boolean }} props - Optional admin props
  * @returns {JSX.Element} The claim details form page
  */
 export default function ClaimCatagory({ employeeId, isAdmin }: { employeeId?: string; isAdmin?: boolean; }) {
