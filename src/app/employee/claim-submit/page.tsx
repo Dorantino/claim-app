@@ -1,15 +1,13 @@
 import EmployeeClaimSubmit from "@/components/employeeClaimSubmit";
+import { Suspense } from "react";
 
 
-export default async function page() {
-
-
+export default function Page() {
     return (
-        <>
+        <Suspense fallback={<div>Loading...</div>}>
             <EmployeeClaimSubmit />
-        </>
+        </Suspense>
     );
 }
-
 
 
