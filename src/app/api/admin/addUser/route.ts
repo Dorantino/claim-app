@@ -7,6 +7,8 @@
  * @param {NextRequest} request - Incoming request with new user data
  * @returns {Promise<Response>} JSON response from addUser
  */
+export const dynamic = "force-dynamic";
+
 import { NextRequest } from 'next/server';
 import { addUser } from '@/tools/DataManager';
 
