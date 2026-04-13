@@ -7,12 +7,18 @@
  * @returns {JSX.Element} Admin claim category creation page
  */
 import EmployeeClaimCategory from "@/components/employeeClaimCategory";
+import { Suspense } from "react";
 
-export default async function page() {
+export default function page() {
     // Render the category selection step for admin-driven claim creation
     return (
         <>
-            <EmployeeClaimCategory />
+            <Suspense fallback={<div>Loading...</div>}>
+                <EmployeeClaimCategory />
+            </Suspense>
         </>
     );
 }
+
+
+
