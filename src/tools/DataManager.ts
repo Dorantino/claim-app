@@ -18,6 +18,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import fs from "fs";
 import path from "path";
+import { v2 as cloudinary } from "cloudinary";
 
 
 
@@ -335,7 +336,7 @@ export async function getAdminClaims() {
             amount: claim.amount,
             status: claim.status,
             comment: claim.comment || "",
-            imageUrls: (claim.receipts || []).map((file: string) => `/uploads/${file}`),
+            imageUrls: claim.receipts || [],
             travelDetails: claim.travelDetails || null,
             medicalDetails: claim.medicalDetails || null,
             date: claim.date?.toISOString(),
@@ -653,13 +654,13 @@ export async function createClaim(request: NextRequest) {
             sanitizeHtml(formData.get("amount") as string)
         );
 
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+            api_key: process.env.CLOUDINARY_API_KEY!,
+            api_secret: process.env.CLOUDINARY_API_SECRET!,
+        });
+
         const files = formData.getAll("receipts") as File[];
-
-        const uploadDir = path.join(process.cwd(), "public/uploads");
-
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
 
         const fileNames: string[] = [];
 
@@ -669,14 +670,11 @@ export async function createClaim(request: NextRequest) {
             const bytes = await file.arrayBuffer();
             const buffer = Buffer.from(bytes);
 
-            const safeName = file.name.replace(/\s+/g, "_");
+            const upload = await cloudinary.uploader.upload(
+                `data:${file.type};base64,${buffer.toString("base64")}`
+            );
 
-            const fileName = `${Date.now()}-${safeName}`;
-            const filePath = path.join(uploadDir, fileName);
-
-            fs.writeFileSync(filePath, buffer);
-
-            fileNames.push(fileName);
+            fileNames.push(upload.secure_url);
         }
 
         const db = mongoClient.db(MONGO_DB_NAME);
